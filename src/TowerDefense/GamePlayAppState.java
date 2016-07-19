@@ -7,10 +7,12 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
+import java.util.ArrayList;
 
 public class GamePlayAppState extends AbstractAppState {
     private SimpleApplication app;
@@ -18,6 +20,9 @@ public class GamePlayAppState extends AbstractAppState {
     private AssetManager assetManager;
     
     public Node playerNode, towerNode, creepNode;
+    private ArrayList<Geometry> creepGeometryArray;
+    private Node beamNode;
+
     private int level, score, health, budget;
     private boolean lastGameWon;
 
@@ -37,9 +42,11 @@ public class GamePlayAppState extends AbstractAppState {
         playerNode = new Node();
         towerNode = new Node();
         creepNode = new Node();
+        beamNode = new Node();
         rootNode.attachChild(playerNode);
         rootNode.attachChild(towerNode);
         rootNode.attachChild(creepNode);
+        rootNode.attachChild(beamNode);
         
         // Add Player
         Geometry playerGeometry = playerGeom(new Vector3f(0, .5f, 0f));
@@ -47,45 +54,28 @@ public class GamePlayAppState extends AbstractAppState {
 
         // Add 2 towers
         Geometry towerGeometryA = towerGeom(new Vector3f(6, 2f, 4));
-        towerGeometryA.setUserData("index", "Tower A");
+        towerGeometryA.getMaterial().setColor("Color", ColorRGBA.Red);
+        towerGeometryA.setUserData("index", "Tower Red");
         towerGeometryA.setUserData("chargesNum", 10);
+        towerGeometryA.addControl(new TowerControl(this));
         towerNode.attachChild(towerGeometryA);
         
         Geometry towerGeometryB = towerGeom(new Vector3f(-6, 2f, 4));
-        towerGeometryB.setUserData("index", "Tower B");
+        towerGeometryB.setUserData("index", "Tower Green");
         towerGeometryB.setUserData("chargesNum", 10);
+        towerGeometryB.addControl(new TowerControl(this));
         towerNode.attachChild(towerGeometryB);
         
         // Add 5 creeps
-        Geometry creepGeometryA = creepGeom(new Vector3f(1, .5f, 10));
-        creepGeometryA.setUserData("index", "Creep A");
-        creepGeometryA.setUserData("health", 100);
-        creepGeometryA.addControl(new CreepControl(this));
-        creepNode.attachChild(creepGeometryA);
-        
-        Geometry creepGeometryB = creepGeom(new Vector3f(-1, .5f, 12));
-        creepGeometryB.setUserData("index", "Creep B");
-        creepGeometryB.setUserData("health", 100);
-        creepGeometryB.addControl(new CreepControl(this));
-        creepNode.attachChild(creepGeometryB);
-        
-        Geometry creepGeometryC = creepGeom(new Vector3f(2, .5f, 14));
-        creepGeometryC.setUserData("index", "Creep C");
-        creepGeometryC.setUserData("health", 100);
-        creepGeometryC.addControl(new CreepControl(this));
-        creepNode.attachChild(creepGeometryC);
-        
-        Geometry creepGeometryD = creepGeom(new Vector3f(-2, .5f, 16));
-        creepGeometryD.setUserData("index", "Creep D");
-        creepGeometryD.setUserData("health", 100);
-        creepGeometryD.addControl(new CreepControl(this));
-        creepNode.attachChild(creepGeometryD);
-        
-        Geometry creepGeometryE = creepGeom(new Vector3f(0, .5f, 18));
-        creepGeometryE.setUserData("index", "Creep E");
-        creepGeometryE.setUserData("health", 100);
-        creepGeometryE.addControl(new CreepControl(this));
-        creepNode.attachChild(creepGeometryE);
+        creepGeometryArray = new ArrayList<Geometry>();
+        for(int i = 0; i<10; i++){
+//            creepGeometryArray.add(creepGeom(new Vector3f(i*-1, .5f, (i*2)+10), i));
+            creepGeometryArray.add(creepGeom(new Vector3f(FastMath.nextRandomInt(-4, 4), .5f, (i*2)+10), i));
+            creepGeometryArray.get(i).setUserData("index", "Creep A");
+            creepGeometryArray.get(i).setUserData("health", 100);
+            creepGeometryArray.get(i).addControl(new CreepControl(this));
+            creepNode.attachChild(creepGeometryArray.get(i));
+        }
     }
     
     @Override
@@ -106,7 +96,7 @@ public class GamePlayAppState extends AbstractAppState {
     }
     
     Geometry towerGeom(Vector3f position){
-        Geometry geom = new Geometry("PlayerGeom", new Box(1,3f,1));
+        Geometry geom = new Geometry("TowerGeom", new Box(1,3f,1));
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Green);
         geom.setMaterial(mat);
@@ -114,8 +104,8 @@ public class GamePlayAppState extends AbstractAppState {
         return geom;
     }
         
-    Geometry creepGeom(Vector3f position){
-        Geometry geom = new Geometry("PlayerGeom", new Box(.5f,.5f,.5f));
+    Geometry creepGeom(Vector3f position, int index){
+        Geometry geom = new Geometry("CreepGeom " + index, new Box(.5f,.5f,.5f));
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Black);
         geom.setMaterial(mat);
@@ -169,5 +159,25 @@ public class GamePlayAppState extends AbstractAppState {
 
     public void setLastGameWon(boolean lastGameWon) {
         this.lastGameWon = lastGameWon;
+    }
+    
+    public ArrayList<Geometry> getCreepGeometryArray() {
+        return creepGeometryArray;
+    }
+
+    public void setCreepGeometryArray(ArrayList<Geometry> creepGeometryArray) {
+        this.creepGeometryArray = creepGeometryArray;
+    }
+    
+    public Node getBeamNode() {
+        return beamNode;
+    }
+
+    public void setBeamNode(Node beamNode) {
+        this.beamNode = beamNode;
+    }
+    
+    public AssetManager getAssetManager(){
+        return this.assetManager;
     }
 }

@@ -2,6 +2,7 @@ package TowerDefense;
 
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
 
@@ -10,7 +11,7 @@ public class CreepControl extends AbstractControl {
     private Node rootNode;
 
     public CreepControl(GamePlayAppState appState) {
-        this.appState = appState;
+        this.appState = appState;                   // to get access to player health and budget
         this.rootNode = appState.getRootNode();
     }
 
@@ -24,13 +25,17 @@ public class CreepControl extends AbstractControl {
             } else {
                 // Died before reaching the player
                 appState.setBudget(appState.getBudget() + 1);
-                rootNode.detachChild(spatial);
+                spatial.removeFromParent();                                     // remove from the scene graph
+                appState.getCreepGeometryArray().remove((Geometry)spatial);     // remove from the array list that holds all creeps
+                
             }
         } else {
             // Reached the player : Subtract health and remove itself
             appState.setHealth(appState.getHealth() - 1);
-            rootNode.detachChild(spatial);
+            spatial.removeFromParent();
+            appState.getCreepGeometryArray().remove((Geometry)spatial);
         }
+        
     }
 
     @Override
