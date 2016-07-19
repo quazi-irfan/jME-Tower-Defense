@@ -57,22 +57,22 @@ public class GamePlayAppState extends AbstractAppState {
         towerGeometryA.getMaterial().setColor("Color", ColorRGBA.Red);
         towerGeometryA.setUserData("index", "Tower Red");
         towerGeometryA.setUserData("chargesNum", 10);
-        towerGeometryA.addControl(new TowerControl(this));
+        towerGeometryA.addControl(new TowerControl(this));      // REMEMBER : addControl initializes spatial variable
         towerNode.attachChild(towerGeometryA);
         
         Geometry towerGeometryB = towerGeom(new Vector3f(-6, 2f, 4));
         towerGeometryB.setUserData("index", "Tower Green");
-        towerGeometryB.setUserData("chargesNum", 10);
+        towerGeometryB.setUserData("chargesNum", 5);
         towerGeometryB.addControl(new TowerControl(this));
         towerNode.attachChild(towerGeometryB);
         
         // Add 5 creeps
         creepGeometryArray = new ArrayList<Geometry>();
-        for(int i = 0; i<10; i++){
-//            creepGeometryArray.add(creepGeom(new Vector3f(i*-1, .5f, (i*2)+10), i));
-            creepGeometryArray.add(creepGeom(new Vector3f(FastMath.nextRandomInt(-4, 4), .5f, (i*2)+10), i));
+        for(int i = 0; i<5; i++){
+            creepGeometryArray.add(creepGeom(new Vector3f(i*-1, .5f, (i*2)+10), i));
+//            creepGeometryArray.add(creepGeom(new Vector3f(FastMath.nextRandomInt(-4, 4), .5f, (i*2)+10), i));
             creepGeometryArray.get(i).setUserData("index", "Creep A");
-            creepGeometryArray.get(i).setUserData("health", 100);
+            creepGeometryArray.get(i).setUserData("health", 10);
             creepGeometryArray.get(i).addControl(new CreepControl(this));
             creepNode.attachChild(creepGeometryArray.get(i));
         }
