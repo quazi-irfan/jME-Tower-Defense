@@ -39,7 +39,7 @@ public class GamePlayAppState extends AbstractAppState {
     private Node playerNode, towerNode, creepNode;
     private Node beamNode;
 
-    private int level, score, health = 1, budget = 5;
+    private int level, score, health = 5, budget = 5;
     private float budgeTimer;
     private boolean lastGameWon;
     private Spatial selectedTower;
@@ -87,9 +87,9 @@ public class GamePlayAppState extends AbstractAppState {
         towerNode.attachChild(towerGeometryB);
 
         // Add 5 creeps        
-        for (int i = 0; i < 5; i++) {
-            Geometry temp = creepGeom(new Vector3f(i*-1, .5f, (i*2)+10), i);
-//            Geometry temp = creepGeom(new Vector3f(FastMath.nextRandomInt(-4, 4), .5f, (i * 2) + 10), i);
+        for (int i = 0; i < 15; i++) {
+//            Geometry temp = creepGeom(new Vector3f(i*-1, .5f, (i*2)+10), i);
+            Geometry temp = creepGeom(new Vector3f(FastMath.nextRandomInt(-4, 4), .5f, (i * 2) + 10), i);
             temp.setUserData("index", "Creep A");
             temp.setUserData("health", 10);
             temp.addControl(new CreepControl(this));
@@ -111,13 +111,14 @@ public class GamePlayAppState extends AbstractAppState {
     
     private void checkWinLoose() {
         if(creepNode.getQuantity() == 0 && health > 0){
-            System.out.println("Player won");
             lastGameWon = true;
+            System.out.println("Player won");
+            this.app.getStateManager().detach(this);
         }
         
         if(health <= 0){
-            System.out.println("Player lost");
             lastGameWon = false;
+            System.out.println("Player lost");
             this.app.getStateManager().detach(this);
         }
     }

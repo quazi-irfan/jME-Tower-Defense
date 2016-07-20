@@ -18,7 +18,7 @@ public class Charge {
     }
 
     public Charge() {
-        setBulletCount(1);
+        setBulletCount(2);
         setDamageValue(5);
     }
 
