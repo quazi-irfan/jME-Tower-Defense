@@ -18,8 +18,11 @@ public class Main extends SimpleApplication {
     public void simpleInitApp() {       
 //        setDisplayStatView(false);
 //        setDisplayFps(false);
-        
+
         flyCam.setMoveSpeed(150);
+        flyCam.setDragToRotate(true);
+        inputManager.setCursorVisible(true);
+        
         cam.setLocation(new Vector3f(0f, 10f, 50f));
         
         GamePlayAppState gamePlayState = new GamePlayAppState();

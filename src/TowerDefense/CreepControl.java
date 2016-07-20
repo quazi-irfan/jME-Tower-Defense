@@ -26,13 +26,11 @@ public class CreepControl extends AbstractControl {
                 // Died before reaching the player
                 appState.setBudget(appState.getBudget() + 1);
                 spatial.removeFromParent();                                     // remove from the scene graph
-                appState.getCreepGeometryArray().remove((Geometry)spatial);     // remove from the array list that holds all creeps
             }
         } else {
             // Reached the player : Subtract health and remove itself
             appState.setHealth(appState.getHealth() - 1);
             spatial.removeFromParent();
-            appState.getCreepGeometryArray().remove((Geometry)spatial);
         }
         
     }
