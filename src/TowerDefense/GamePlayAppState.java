@@ -167,6 +167,7 @@ public class GamePlayAppState extends AbstractAppState {
         rootNode.detachChild(playerNode);
         rootNode.detachChild(towerNode);
         rootNode.detachChild(creepNode);
+        rootNode.detachChild(beamNode);
     }
 
     Geometry playerGeom(Vector3f position) {
